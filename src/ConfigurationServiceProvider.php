@@ -2,7 +2,6 @@
 
 namespace Whilesmart\LaravelConfiguration;
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class ConfigurationServiceProvider extends ServiceProvider
@@ -32,9 +31,7 @@ class ConfigurationServiceProvider extends ServiceProvider
         ], ['laravel-configuration', 'laravel-configuration-migrations']);
 
         if (config('laravel-configuration.register_routes', true)) {
-            Route::prefix('api')->group(function () {
-                $this->loadRoutesFrom(__DIR__.'/../routes/laravel-configuration.php');
-            });
+            $this->loadRoutesFrom(__DIR__.'/../routes/laravel-configuration.php');
         }
 
         $this->publishes([
