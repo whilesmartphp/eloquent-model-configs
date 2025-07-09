@@ -140,10 +140,10 @@ $config= $model->setConfigValue('default_wallet',1, ConfigValueType::Integer);
 
 After installation, the following API endpoints will be available:
 
-* **POST /api/configuration:** Registers a new device linked to the current logged in user.
-* **Get /api/configuration:** Retrieves all configuration linked to the current logged in user.
-* **PUT /api/configuration/{id}:** Updates the device information.
-* **DELETE /api/configuration/{id}:** Deletes a device from the database.
+* **POST /configuration:** Registers a new device linked to the current logged in user.
+* **Get /configuration:** Retrieves all configuration linked to the current logged in user.
+* **PUT /configuration/{id}:** Updates the device information.
+* **DELETE /configuration/{id}:** Deletes a device from the database.
 * **OpenAPI Documentation:** Accessible via a route that your OpenAPI package defines.
 
 **Example  Request:**
