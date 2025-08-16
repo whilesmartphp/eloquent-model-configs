@@ -1,4 +1,4 @@
-# Whilesmart Laravel  Configuration Package
+# Whilesmart Laravel Model Configuration Package
 
 This Laravel package provides a complete configuration solution ready to be integrated into your application.
 
@@ -14,7 +14,7 @@ This Laravel package provides a complete configuration solution ready to be inte
 ### 1. Require the package
 
    ```bash
-   composer require whilesmart/laravel-configuration
+   composer require whilesmart/model-configuration
    ```
 
 ### 2. Publish the configuration and migrations:
@@ -28,14 +28,14 @@ the migrations, routes, controllers separately or all at once.
 Run the command below to publish only the routes.
 
 ```bash
-php artisan vendor:publish --tag=laravel-configuration-routes
+php artisan vendor:publish --tag=model-configuration-routes
 php artisan migrate
 ```
 
-The routes will be available at `routes/laravel-configuration.php`. You should `require` this file in your `api.php` file.
+The routes will be available at `routes/model-configuration.php`. You should `require` this file in your `api.php` file.
 
 ```php
-    require 'laravel-configuration.php';
+    require 'model-configuration.php';
 ```
 
 #### 2.2 Publishing only the migrations
@@ -43,7 +43,7 @@ The routes will be available at `routes/laravel-configuration.php`. You should `
 +If you would like to make changes to the migration files, run the command below to publish only the migrations.
 
 ```bash
-php artisan vendor:publish --tag=laravel-configuration-migrations
+php artisan vendor:publish --tag=model-configuration-migrations
 php artisan migrate
 ```
 
@@ -56,7 +56,7 @@ another model, you can publish the controllers and make the necessary changes to
 To publish the controllers, run the command below
 
 ```bash
-php artisan vendor:publish --tag=laravel-configuration-controllers
+php artisan vendor:publish --tag=model-configuration-controllers
 php artisan migrate
 ```
 
@@ -70,7 +70,7 @@ Finally, change the namespace in the published controllers to your namespace.
 To publish the migrations, routes and controllers, you can run the command below
 
 ```bash
-php artisan vendor:publish --tag=laravel-configuration
+php artisan vendor:publish --tag=model-configuration
 php artisan migrate
 ```
 
@@ -82,7 +82,7 @@ We have implemented a Trait `Configurable` that handles relationships. If your m
 `Configurable` trait in your model definition.
 
 ```php
-use Whilesmart\LaravelConfiguration\Traits\Configurable
+use Whilesmart\ModelConfiguration\Traits\Configurable
 class MyModel {
  use Configurable;
 }
@@ -99,7 +99,7 @@ $model->configurations();
 The `Configurable` trait also has the `getConfigurationssAttribute()` method. If you want to append the configuration to the model response, simply add `configuration` to your model's $appends
 
 ```php
-use Whilesmart\LaravelConfiguration\Traits\Configurable;
+use Whilesmart\ModelConfiguration\Traits\Configurable;
 class MyModel {
  use Configurable;
  
