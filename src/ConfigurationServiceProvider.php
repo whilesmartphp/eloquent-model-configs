@@ -36,7 +36,7 @@ class ConfigurationServiceProvider extends ServiceProvider
 
         $this->publishes([
             __DIR__.'/../routes/model-configuration.php' => base_path('routes/model-configuration.php'),
-        ], ['model-configuration', 'model-configuration-routes', 'model-configuration-controllers']);
+        ], ['model-configuration', 'model-configuration-routes']);
 
         $this->publishes([
             __DIR__.'/Http/Controllers' => app_path('Http/Controllers'),
