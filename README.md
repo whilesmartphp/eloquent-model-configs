@@ -1,13 +1,16 @@
-# Whilesmart Laravel Model Configuration Package
+# Whilesmart Eloquent Model Configuration Package
 
 This Laravel package provides a complete configuration solution ready to be integrated into your application.
 
 ## Features
 
-* **Ready-to-use  endpoints:**
-* **OpenAPI documentation:** Automatically generated documentation using PHP attributes.
-* **Configuration file:** Easily customize settings.
-* **Laravel agnostic considerations:** designed with future framework agnosticism in mind.
+* **NoSQL-like Flexibility:** Add schema-less dynamic attributes to any Eloquent model without database migrations
+* **Type-Safe Storage:** Supports strings, integers, arrays, JSON, dates with automatic type casting via `ConfigValueType` enum
+* **Polymorphic Relationships:** Any model can have configurations through a single, flexible relationship
+* **Ready-to-use endpoints:** Complete API for managing configurations
+* **OpenAPI documentation:** Automatically generated documentation using PHP attributes
+* **Configuration file:** Easily customize settings
+* **Laravel agnostic considerations:** designed with future framework agnosticism in mind
 
 ## Development
 
@@ -50,7 +53,7 @@ make help
 ### 1. Require the package
 
    ```bash
-   composer require whilesmart/laravel-model-configuration
+   composer require whilesmart/eloquent-model-configuration
    ```
 
 ### 2. Publish the configuration and migrations:

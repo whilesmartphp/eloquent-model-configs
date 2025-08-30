@@ -1,6 +1,6 @@
 {
-    "name": "whilesmart/laravel-model-configuration",
-    "description": "Package for managing configurations across our projects",
+    "name": "whilesmart/eloquent-model-configuration",
+    "description": "Laravel package for managing model-specific configurations with type safety and easy persistence",
     "license": "MIT",
     "authors": [
         {
