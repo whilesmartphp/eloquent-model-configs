@@ -1,61 +1,62 @@
 {
-    "name": "whilesmart/eloquent-model-configuration",
-    "description": "Laravel package for managing model-specific configurations with type safety and easy persistence",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "WhileSmart",
-            "email": "engineering@whilesmart.com"
-        }
-    ],
-    "autoload": {
-        "psr-4": {
-            "Whilesmart\\ModelConfiguration\\": "src"
-        }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Whilesmart\\ModelConfiguration\\ConfigurationServiceProvider"
-            ]
-        }
-    },
-    "require-dev": {
-        "orchestra/testbench": "^10.4",
-        "zircote/swagger-php": "^5.1",
-        "nunomaduro/collision": "^8.8",
-        "laravel/pint": "^1.22",
-        "fakerphp/faker": "^1.24"
-    },
-    "require": {
-        "laravel/sanctum": "^4.1"
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Workbench\\App\\": "workbench/app/"
-        }
-    },
-    "scripts": {
-        "pint": [
-            "./vendor/bin/pint"
-        ],
-        "pint:test": [
-            "./vendor/bin/pint --test"
-        ],
-        "post-autoload-dump": [
-            "@clear",
-            "@prepare"
-        ],
-        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
-        "prepare": "@php vendor/bin/testbench package:discover --ansi",
-        "build": "@php vendor/bin/testbench workbench:build --ansi",
-        "serve": [
-            "Composer\\Config::disableProcessTimeout",
-            "@build",
-            "@php vendor/bin/testbench serve --ansi"
-        ],
-        "lint": [
-            "@php vendor/bin/pint --ansi"
-        ]
+  "name": "whilesmart/eloquent-model-configuration",
+  "description": "Laravel package for managing model-specific configurations with type safety and easy persistence",
+  "license": "MIT",
+  "pakage-version": "1.0.1",
+  "authors": [
+    {
+      "name": "WhileSmart",
+      "email": "engineering@whilesmart.com"
     }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Whilesmart\\ModelConfiguration\\": "src"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Whilesmart\\ModelConfiguration\\ConfigurationServiceProvider"
+      ]
+    }
+  },
+  "require-dev": {
+    "orchestra/testbench": "^10.4",
+    "zircote/swagger-php": "^5.1",
+    "nunomaduro/collision": "^8.8",
+    "laravel/pint": "^1.22",
+    "fakerphp/faker": "^1.24"
+  },
+  "require": {
+    "laravel/sanctum": "^4.1"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Workbench\\App\\": "workbench/app/"
+    }
+  },
+  "scripts": {
+    "pint": [
+      "./vendor/bin/pint"
+    ],
+    "pint:test": [
+      "./vendor/bin/pint --test"
+    ],
+    "post-autoload-dump": [
+      "@clear",
+      "@prepare"
+    ],
+    "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+    "prepare": "@php vendor/bin/testbench package:discover --ansi",
+    "build": "@php vendor/bin/testbench workbench:build --ansi",
+    "serve": [
+      "Composer\\Config::disableProcessTimeout",
+      "@build",
+      "@php vendor/bin/testbench serve --ansi"
+    ],
+    "lint": [
+      "@php vendor/bin/pint --ansi"
+    ]
+  }
 }
