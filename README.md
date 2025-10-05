@@ -103,7 +103,16 @@ The controllers will be available in the `app/Http/Controllers` directory.
 Finally, change the namespace in the published controllers to your namespace.
 
 
-#### 2.4 Publish everything
+#### 2.4 Publish the documentation
+
+To publish the openapi documentation, run the command below
+
+```bash
+php artisan vendor:publish --tag=model-configuration-docs
+```
+The documentation will be available at `app/Http/Documentation`
+
+#### 2.5 Publish everything
 
 To publish the migrations, routes and controllers, you can run the command below
 
