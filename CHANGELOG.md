@@ -3,3 +3,6 @@
 
 ## [1.0.1] - 2025-10-01
 - Update package name
+
+## [1.0.2] - 2025-10-06
+- Add command to export openapi documentation
