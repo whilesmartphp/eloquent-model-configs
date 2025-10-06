@@ -2,6 +2,7 @@
 
 namespace Whilesmart\ModelConfiguration;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class ConfigurationServiceProvider extends ServiceProvider
@@ -31,7 +32,14 @@ class ConfigurationServiceProvider extends ServiceProvider
         ], ['model-configuration', 'model-configuration-migrations']);
 
         if (config('model-configuration.register_routes', true)) {
-            $this->loadRoutesFrom(__DIR__.'/../routes/model-configuration.php');
+            $prefix = config('model-configuration.route_prefix', 'api');
+            if ($prefix) {
+                Route::prefix($prefix)->group(function () {
+                    $this->loadRoutesFrom(__DIR__.'/../routes/model-configuration.php');
+                });
+            } else {
+                $this->loadRoutesFrom(__DIR__.'/../routes/model-configuration.php');
+            }
         }
 
         $this->publishes([
