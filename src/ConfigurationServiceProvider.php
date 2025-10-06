@@ -48,7 +48,7 @@ class ConfigurationServiceProvider extends ServiceProvider
         ], ['model-configuration', 'model-configuration-config']);
 
         $this->publishes([
-            __DIR__.'/Http/Documentation' => app_path('Http/Documentation'),
+            __DIR__.'/Documentation' => app_path('Http/Documentation'),
         ], ['model-configuration', 'model-configuration-docs']);
     }
 }
