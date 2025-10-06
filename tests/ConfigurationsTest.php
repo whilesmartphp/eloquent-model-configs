@@ -32,7 +32,7 @@ class ConfigurationsTest extends TestCase
         ]);
 
         // Make the request to get all configurations
-        $response = $this->actingAs($user)->getJson('/configurations');
+        $response = $this->actingAs($user)->getJson('/api/configurations');
 
         // Assert the response is successful and has the correct structure
         $response->assertStatus(200)
@@ -69,7 +69,7 @@ class ConfigurationsTest extends TestCase
     {
         $user = $this->createUser();
 
-        $response = $this->actingAs($user)->postJson('/configurations', [
+        $response = $this->actingAs($user)->postJson('/api/configurations', [
             'key' => 'theme_preference',
             'type' => 'array',
             'value' => ['theme' => 'dark', 'color' => '#333333'],
@@ -97,7 +97,7 @@ class ConfigurationsTest extends TestCase
         $configuration = $user->setConfigValue('theme_preference', ['theme' => 'dark', 'color' => '#333333'], ConfigValueType::Array);
 
         // Update the configuration
-        $response = $this->actingAs($user)->putJson('/configurations/'.$configuration->key, [
+        $response = $this->actingAs($user)->putJson('/api/configurations/'.$configuration->key, [
             'value' => ['theme' => 'light', 'color' => '#ffffff'],
             'type' => 'array',
         ]);
@@ -135,7 +135,7 @@ class ConfigurationsTest extends TestCase
         ]);
 
         // Delete the configuration
-        $response = $this->actingAs($user)->deleteJson('/configurations/'.$configuration->key);
+        $response = $this->actingAs($user)->deleteJson('/api/configurations/'.$configuration->key);
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -155,7 +155,7 @@ class ConfigurationsTest extends TestCase
         $user = $this->createUser();
 
         // Try to update a configuration that doesn't exist
-        $response = $this->actingAs($user)->putJson('/configurations/999999', [
+        $response = $this->actingAs($user)->putJson('/api/configurations/999999', [
             'value' => 2,
             'type' => 'int',
         ]);
@@ -168,7 +168,7 @@ class ConfigurationsTest extends TestCase
         $user = $this->createUser();
 
         // Try to delete a configuration that doesn't exist
-        $response = $this->actingAs($user)->deleteJson('/configurations/999999');
+        $response = $this->actingAs($user)->deleteJson('/api/configurations/999999');
 
         $response->assertStatus(404);
     }
@@ -186,7 +186,7 @@ class ConfigurationsTest extends TestCase
         ]);
 
         // Try to access user1's configuration as user2
-        $response = $this->actingAs($user2)->getJson('/configurations');
+        $response = $this->actingAs($user2)->getJson('/api/configurations');
 
         $response->assertStatus(200);
         $this->assertEmpty($response->json('data'));
@@ -195,7 +195,7 @@ class ConfigurationsTest extends TestCase
     public function unauthorized_user_cannot_access_configurations()
     {
         // Try to access configurations without authentication
-        $response = $this->getJson('/configurations');
+        $response = $this->getJson('/api/configurations');
         $response->assertStatus(401);
     }
 
@@ -203,7 +203,7 @@ class ConfigurationsTest extends TestCase
     {
         $user = $this->createUser();
 
-        $response = $this->actingAs($user)->postJson('/configurations', [
+        $response = $this->actingAs($user)->postJson('/api/configurations', [
             'value' => ['theme' => 'dark', 'color' => '#333333'],
             'type' => 'array',
         ]);
@@ -215,7 +215,7 @@ class ConfigurationsTest extends TestCase
     {
         $user = $this->createUser();
 
-        $response = $this->actingAs($user)->postJson('/configurations', [
+        $response = $this->actingAs($user)->postJson('/api/configurations', [
             'key' => 'theme_preference',
             'type' => 'string',
         ]);
@@ -235,7 +235,7 @@ class ConfigurationsTest extends TestCase
         ]);
 
         // Try to update without providing a value
-        $response = $this->actingAs($user)->putJson('/configurations/theme_preference', []);
+        $response = $this->actingAs($user)->putJson('/api/configurations/theme_preference', []);
 
         $response->assertStatus(422);
     }
