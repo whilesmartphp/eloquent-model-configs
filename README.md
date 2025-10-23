@@ -134,6 +134,24 @@ return [
 ];
 
 ```
+
+#### 2.7 More configurations
+Config keys are case-insensitive by default. For example `ConfigName` and `configname` are considered the same. To change this behavior, set the `allow_case_insensitive_keys` config variable to `true`.
+```php
+<?php
+
+return [
+    ...,
+    'allow_case_insensitive_keys' => true,
+];
+```
+
+Config names can take only the following:
+1. Lowercase characters: a to z
+2. Uppercase characters: A to Z
+3. Numbers: 0 to 9
+4. Some special characters:  hyphen (-), underscore (_), fullstop (.) and plus (+)
+
 ### 3. Model Relationships
 
 We have implemented a Trait `Configurable` that handles relationships. If your model has configuration, simply use the

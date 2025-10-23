@@ -40,7 +40,12 @@ class ConfigurationController extends Controller implements IConfigurationContro
 
     protected function sanitizeKey($key): string
     {
-        return strtolower(preg_replace('/[^a-z0-9-_.+]/', '', $key));
+        $sanitized_key = preg_replace('/[^a-zA-Z0-9-_.+]/', '', $key);
+        if (config('model-configuration.allow_case_insensitive_keys', false)) {
+            return $sanitized_key;
+        }
+
+        return strtolower($sanitized_key);
     }
 
     public function update(Request $request, $key): JsonResponse
