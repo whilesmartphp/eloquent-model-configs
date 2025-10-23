@@ -38,11 +38,9 @@ class ConfigurationController extends Controller implements IConfigurationContro
         return $this->success(null, 'Configuration added successfully', 201);
     }
 
-    private function sanitizeKey($key): mixed
+    protected function sanitizeKey($key): string
     {
-        $formattedKey = strtolower(preg_replace('/\s+/', '_', $key));
-
-        return preg_replace('/[^a-z0-9_]/', '', $formattedKey);
+        return strtolower(preg_replace('/[^a-z0-9-_.+]/', '', $key));
     }
 
     public function update(Request $request, $key): JsonResponse
@@ -74,6 +72,21 @@ class ConfigurationController extends Controller implements IConfigurationContro
         $config = $user->setConfigValue($key, $value, $configuration_type);
 
         return $this->success($config, 'Configuration updated successfully');
+    }
+
+    public function show(Request $request, $key): JsonResponse
+    {
+        $user = $request->user();
+        $formattedKey = $this->sanitizeKey($key);
+
+        // Check if the configuration exists
+        $configuration = $user->getConfig($formattedKey);
+
+        if (! $configuration) {
+            return $this->failure('Configuration not found.', 404);
+        }
+
+        return $this->success($configuration, 'Configuration updated successfully');
     }
 
     public function destroy(Request $request, $key): JsonResponse
