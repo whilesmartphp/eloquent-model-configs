@@ -123,6 +123,17 @@ php artisan migrate
 
 #### Note: See section 2.1 above to make the routes accessible
 
+#### 2.6 Middleware configuration
+The default controller gets the authenticated user from the `Request` object. The default routes must be placed in an auth middleware. Set your auth middleware in the `config/model-configuration.php` file.
+```php
+<?php
+
+return [
+    ...,
+    'auth_middleware' => ['auth:sanctum'],
+];
+
+```
 ### 3. Model Relationships
 
 We have implemented a Trait `Configurable` that handles relationships. If your model has configuration, simply use the

@@ -32,7 +32,7 @@ class ConfigurationServiceProvider extends ServiceProvider
         ], ['model-configuration', 'model-configuration-migrations']);
 
         if (config('model-configuration.register_routes', true)) {
-            Route::group(['middleware' => config('model-configuration.route_middleware', [])], function () {
+            Route::group(['middleware' => config('model-configuration.auth_middleware', [])], function () {
                 $prefix = config('model-configuration.route_prefix', 'api');
                 if ($prefix) {
                     Route::prefix($prefix)->group(function () {
