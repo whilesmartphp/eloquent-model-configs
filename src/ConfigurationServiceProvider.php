@@ -32,14 +32,16 @@ class ConfigurationServiceProvider extends ServiceProvider
         ], ['model-configuration', 'model-configuration-migrations']);
 
         if (config('model-configuration.register_routes', true)) {
-            $prefix = config('model-configuration.route_prefix', 'api');
-            if ($prefix) {
-                Route::prefix($prefix)->group(function () {
+            Route::group(['middleware' => config('model-configuration.auth_middleware', [])], function () {
+                $prefix = config('model-configuration.route_prefix', 'api');
+                if ($prefix) {
+                    Route::prefix($prefix)->group(function () {
+                        $this->loadRoutesFrom(__DIR__.'/../routes/model-configuration.php');
+                    });
+                } else {
                     $this->loadRoutesFrom(__DIR__.'/../routes/model-configuration.php');
-                });
-            } else {
-                $this->loadRoutesFrom(__DIR__.'/../routes/model-configuration.php');
-            }
+                }
+            });
         }
 
         $this->publishes([
