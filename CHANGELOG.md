@@ -9,3 +9,7 @@
 
 ## [1.0.3] - 2025-10-06
 - Add ability to set custom api prefixes for the default model configuration endpoints.
+
+## [1.0.4] - 2025-10-24
+- Add support for auth middleware.
+- Add an option to allow case-insensitive config keys.

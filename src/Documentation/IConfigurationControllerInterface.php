@@ -67,6 +67,30 @@ interface IConfigurationControllerInterface
     )]
     public function update(Request $request, $key): JsonResponse;
 
+    #[OA\Get(
+        path: '/configurations/{key}',
+        summary: 'Get a single configuration',
+        security: [
+            ['bearerAuth' => []],
+        ],
+        tags: ['Configuration'],
+        parameters: [
+            new OA\Parameter(
+                name: 'key',
+                description: 'Configuration key',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Configuration loaded successfully'),
+            new OA\Response(response: 404, description: 'Configuration not found'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ]
+    )]
+    public function show(Request $request, $key): JsonResponse;
+
     #[OA\Delete(
         path: '/configurations/{key}',
         summary: 'Delete a user configuration',

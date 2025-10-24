@@ -123,6 +123,36 @@ class ConfigurationsTest extends TestCase
         $this->assertEquals('#ffffff', $configuration->value['color']);
     }
 
+    public function test_api_user_can_get_a_configuration()
+    {
+        $user = $this->createUser();
+        $configuration = $user->setConfigValue('theme_preference', ['theme' => 'dark', 'color' => '#333333'], ConfigValueType::Array);
+
+        $response = $this->actingAs($user)->getJson('/api/configurations/'.$configuration->key);
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data',
+            ]);
+
+        $data = $response->json('data');
+        $this->assertEquals('theme_preference', $data['key']);
+        $this->assertIsArray($data['value']);
+    }
+
+    public function test_api_user_can_not_get_the_configuration_of_another_ser()
+    {
+        $user = $this->createUser();
+        $configuration = $user->setConfigValue('theme_preference', ['theme' => 'dark', 'color' => '#333333'], ConfigValueType::Array);
+
+        $user2 = $this->createUser();
+        $response = $this->actingAs($user2)->getJson('/api/configurations/'.$configuration->key);
+
+        $response->assertStatus(404);
+    }
+
     public function test_api_user_can_delete_configuration()
     {
         $user = $this->createUser();
