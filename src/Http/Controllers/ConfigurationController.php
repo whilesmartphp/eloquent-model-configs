@@ -74,7 +74,7 @@ class ConfigurationController extends Controller implements IConfigurationContro
         // Update the configuration
         $configuration_type = ConfigValueType::from($data['type']);
         $value = $configuration_type->getValue($data['value']);
-        $config = $user->setConfigValue($key, $value, $configuration_type);
+        $config = $user->setConfigValue($formattedKey, $value, $configuration_type);
 
         return $this->success($config, 'Configuration updated successfully');
     }
@@ -91,7 +91,7 @@ class ConfigurationController extends Controller implements IConfigurationContro
             return $this->failure('Configuration not found.', 404);
         }
 
-        return $this->success($configuration, 'Configuration updated successfully');
+        return $this->success($configuration, 'Configuration retrieved successfully');
     }
 
     public function destroy(Request $request, $key): JsonResponse
