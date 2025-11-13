@@ -14,10 +14,16 @@ class ConfigurationController extends Controller implements IConfigurationContro
 {
     use ApiResponse;
 
+    private function getAllowedConfigKeys(): array
+    {
+        return config('allowed_configs.keys', []);
+    }
+
     public function store(Request $request): JsonResponse
     {
+        $allowedKeys = $this->getAllowedConfigKeys();
         $validator = Validator::make($request->all(), [
-            'key' => 'required',
+            'key' => 'required|in:' . implode(',', $allowedKeys),
             'value' => 'required',
             'type' => 'required|in:string,int,float,bool,array,json,date',
         ]);
@@ -50,6 +56,11 @@ class ConfigurationController extends Controller implements IConfigurationContro
 
     public function update(Request $request, $key): JsonResponse
     {
+        $allowedKeys = $this->getAllowedConfigKeys();
+        if (!in_array($key, $allowedKeys)) {
+            return $this->failure('Invalid configuration key.', 422);
+        }
+
         $validator = Validator::make($request->all(), [
             'value' => 'required',
             'type' => 'required|in:string,int,float,bool,array,json,date',
