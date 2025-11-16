@@ -16,16 +16,16 @@ class ConfigurationController extends Controller implements IConfigurationContro
 
     private function getAllowedConfigKeys(): array
     {
-        $allowedKeys = config('allowed_configs.keys', []);
-        if (empty($allowedKeys)) {
-            return $this->failure('No allowed configuration keys defined.', 500);
-        }
-        return $allowedKeys;
+        return config('allowed_configs.keys', []);
+        
     }
 
     public function store(Request $request): JsonResponse
     {
         $allowedKeys = $this->getAllowedConfigKeys();
+        if (empty($allowedKeys)) {
+            return $this->failure('No allowed configuration keys defined.', 500);
+        }
         $validator = Validator::make($request->all(), [
             'key' => 'required|in:' . implode(',', $allowedKeys),
             'value' => 'required',
@@ -61,6 +61,9 @@ class ConfigurationController extends Controller implements IConfigurationContro
     public function update(Request $request, $key): JsonResponse
     {
         $allowedKeys = $this->getAllowedConfigKeys();
+        if (empty($allowedKeys)) {
+            return $this->failure('No allowed configuration keys defined.', 500);
+        }
         if (!in_array($key, $allowedKeys)) {
             return $this->failure('Invalid configuration key.', 422);
         }
