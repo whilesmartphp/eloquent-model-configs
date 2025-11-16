@@ -16,7 +16,11 @@ class ConfigurationController extends Controller implements IConfigurationContro
 
     private function getAllowedConfigKeys(): array
     {
-        return config('allowed_configs.keys', []);
+        $allowedKeys = config('allowed_configs.keys', []);
+        if (empty($allowedKeys)) {
+            return $this->failure('No allowed configuration keys defined.', 500);
+        }
+        return $allowedKeys;
     }
 
     public function store(Request $request): JsonResponse

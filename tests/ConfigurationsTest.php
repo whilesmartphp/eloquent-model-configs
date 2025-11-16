@@ -270,6 +270,22 @@ class ConfigurationsTest extends TestCase
         $response->assertStatus(422);
     }
 
+    public function test_api_user_cannot_add_configuration_when_allowed_keys_empty()
+    {
+        // Temporarily set allowed keys to be empty
+        config(['allowed_configs.keys' => []]);
+
+        $user = $this->createUser();
+        $response = $this->actingAs($user)->postJson('/api/configurations', [
+            'key' => 'theme_preference',
+            'value' => ['theme' => 'dark', 'color' => '#333333'],
+            'type' => 'array',
+        ]);
+
+        $response->assertStatus(500)
+            ->assertJson(['success' => false, 'message' => 'No allowed configuration keys defined.']);
+    }
+
     /**
      * Define database migrations.
      *
