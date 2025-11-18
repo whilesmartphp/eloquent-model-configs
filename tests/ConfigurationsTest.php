@@ -142,7 +142,7 @@ class ConfigurationsTest extends TestCase
         $this->assertIsArray($data['value']);
     }
 
-    public function test_api_user_can_not_get_the_configuration_of_another_ser()
+    public function test_api_user_can_not_get_the_configuration_of_another_user()
     {
         $user = $this->createUser();
         $configuration = $user->setConfigValue('theme_preference', ['theme' => 'dark', 'color' => '#333333'], ConfigValueType::Array);
@@ -270,20 +270,54 @@ class ConfigurationsTest extends TestCase
         $response->assertStatus(422);
     }
 
-    public function test_api_user_cannot_add_configuration_when_allowed_keys_empty()
+    public function test_api_user_cannot_add_configuration_with_unallowed_key()
     {
-        // Temporarily set allowed keys to be empty
-        config(['allowed_configs.keys' => []]);
 
         $user = $this->createUser();
+
+        config(['model-configuration.allowed_keys' => ['allowed_key1', 'allowed_key2']]);
         $response = $this->actingAs($user)->postJson('/api/configurations', [
             'key' => 'theme_preference',
             'value' => ['theme' => 'dark', 'color' => '#333333'],
             'type' => 'array',
         ]);
 
-        $response->assertStatus(500)
-            ->assertJson(['success' => false, 'message' => 'No allowed configuration keys defined.']);
+        $response->assertStatus(422);
+    }
+
+    public function test_api_user_can_add_configuration_with_allowed_key()
+    {
+
+        $user = $this->createUser();
+
+        config(['model-configuration.allowed_keys' => ['allowed_key1', 'allowed_key2']]);
+        $response = $this->actingAs($user)->postJson('/api/configurations', [
+            'key' => 'allowed_key1',
+            'value' => ['theme' => 'dark', 'color' => '#333333'],
+            'type' => 'array',
+        ]);
+
+        $response->assertStatus(201);
+    }
+
+    public function test_api_user_cannot_update_configuration_with_unallowed_key()
+    {
+
+        $user = $this->createUser();
+
+        $user->configurations()->create([
+            'key' => 'theme_preference',
+            'value' => ['theme' => 'dark', 'color' => '#333333'],
+            'type' => 'array',
+        ]);
+
+        config(['model-configuration.allowed_keys' => ['allowed_key1', 'allowed_key2']]);
+        $response = $this->actingAs($user)->putJson('/api/configurations/theme_preference', [
+            'value' => ['theme' => 'dark', 'color' => '#333333'],
+            'type' => 'array',
+        ]);
+
+        $response->assertStatus(422);
     }
 
     /**
