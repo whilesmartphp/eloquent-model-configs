@@ -152,6 +152,16 @@ Config names can take only the following:
 3. Numbers: 0 to 9
 4. Some special characters:  hyphen (-), underscore (_), fullstop (.) and plus (+)
 
+You can also restrict the key names allowed by adding each allowed key name in the `allowed_keys` array
+```php
+<?php
+
+return [
+    ...,
+    'allowed_keys' => ['key-1','key-2'],
+];
+```
+
 ### 3. Model Relationships
 
 We have implemented a Trait `Configurable` that handles relationships. If your model has configuration, simply use the
