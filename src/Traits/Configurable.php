@@ -17,7 +17,9 @@ trait Configurable
 
     public function configurations(): MorphMany
     {
-        return $this->morphMany(Configuration::class, 'configurable');
+        $model = config('model-configuration.model', Configuration::class);
+
+        return $this->morphMany($model, 'configurable');
     }
 
     public function getConfigValue(string $key)
