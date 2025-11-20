@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Hash;
 use Orchestra\Testbench\Attributes\WithMigration;
 use Orchestra\Testbench\TestCase;
 use Whilesmart\ModelConfiguration\Enums\ConfigValueType;
+use Workbench\App\Hooks\CustomFilterHook;
 use Workbench\App\Models\User;
 
 use function Orchestra\Testbench\workbench_path;
@@ -63,6 +64,48 @@ class ConfigurationsTest extends TestCase
             'name' => Factory::create()->unique()->name,
             'password' => Hash::make('password123'),
         ], $attributes));
+    }
+
+    public function test_api_user_can_apply_a_custom_hook_on_all_configurations_result()
+    {
+        $user = $this->createUser();
+
+        // Create some test configurations for the user
+        $user->configurations()->create([
+            'key' => 'theme_preference',
+            'type' => 'array',
+            'value' => ['theme' => 'dark', 'color' => '#333333'],
+        ]);
+
+        $user->configurations()->create([
+            'key' => 'notification_settings',
+            'value' => ['email' => true, 'push' => false],
+        ]);
+
+        config(['model-configuration.format_results_hook' => CustomFilterHook::class]);
+
+        // Make the request to get all configurations
+        $response = $this->actingAs($user)->getJson('/api/configurations');
+
+        // Assert the response is successful and has the correct structure
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data' => [
+                    'results' => [
+                        '*' => [
+                            'id',
+                            'configurable_type',
+                            'configurable_id',
+                            'key',
+                            'value',
+                            'created_at',
+                            'updated_at',
+                        ],
+                    ],
+                ],
+            ]);
     }
 
     public function test_api_user_can_add_configuration()

@@ -2,23 +2,19 @@
 
 namespace Whilesmart\ModelConfiguration\Http\Controllers;
 
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Validator;
 use Whilesmart\ModelConfiguration\Documentation\IConfigurationControllerInterface;
 use Whilesmart\ModelConfiguration\Enums\ConfigValueType;
+use Whilesmart\ModelConfiguration\Interfaces\ResultsFilterHookInterface;
 use Whilesmart\ModelConfiguration\Traits\ApiResponse;
 
 class ConfigurationController extends Controller implements IConfigurationControllerInterface
 {
     use ApiResponse;
-
-    private function getAllowedConfigKeys(): array
-    {
-        return config('model-configuration.allowed_keys', []);
-
-    }
 
     public function store(Request $request): JsonResponse
     {
@@ -48,6 +44,12 @@ class ConfigurationController extends Controller implements IConfigurationContro
         $user->setConfigValue($formattedKey, $value, $configuration_type);
 
         return $this->success(null, 'Configuration added successfully', 201);
+    }
+
+    private function getAllowedConfigKeys(): array
+    {
+        return config('model-configuration.allowed_keys', []);
+
     }
 
     protected function sanitizeKey($key): string
@@ -134,8 +136,25 @@ class ConfigurationController extends Controller implements IConfigurationContro
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
-        $configurations = $user->configurations()->get();
+        $configurations = $user->configurations();
+        $configurations = $this->formatResults($configurations, $request);
 
         return $this->success($configurations, 'Configurations retrieved successfully');
+    }
+
+    private function formatResults(Relation $query, Request $request): mixed
+    {
+        $hook = config('model-configuration.format_results_hook');
+
+        if ($hook && class_exists($hook)) {
+            $hook = app($hook);
+            if ($hook instanceof ResultsFilterHookInterface) {
+                $filteredQuery = $hook->run($query, $request);
+
+                return $filteredQuery;
+            }
+        }
+
+        return $query->get();
     }
 }
