@@ -320,6 +320,55 @@ class ConfigurationsTest extends TestCase
         $response->assertStatus(422);
     }
 
+    public function test_api_user_can_use_custom_configuration_model()
+    {
+        config(['model-configuration.model' => \Workbench\App\Models\CustomConfiguration::class]);
+
+        $user = $this->createUser();
+
+        $response = $this->actingAs($user)->postJson('/api/configurations', [
+            'key' => 'custom_config',
+            'value' => 'test_value',
+            'type' => 'string',
+        ]);
+
+        $response->assertStatus(201);
+
+        $configuration = $user->getConfig('custom_config');
+        $this->assertInstanceOf(\Workbench\App\Models\CustomConfiguration::class, $configuration);
+        $this->assertTrue($configuration->is_custom);
+    }
+
+    public function test_api_user_can_retrieve_custom_model_configurations()
+    {
+        config(['model-configuration.model' => \Workbench\App\Models\CustomConfiguration::class]);
+
+        $user = $this->createUser();
+
+        $user->setConfigValue('test_key', 'test_value', \Whilesmart\ModelConfiguration\Enums\ConfigValueType::String);
+
+        $response = $this->actingAs($user)->getJson('/api/configurations');
+
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertCount(1, $data);
+        $this->assertTrue($data[0]['is_custom']);
+    }
+
+    public function test_custom_model_inherits_base_functionality()
+    {
+        config(['model-configuration.model' => \Workbench\App\Models\CustomConfiguration::class]);
+
+        $user = $this->createUser();
+
+        $config = $user->setConfigValue('inherited_test', ['key' => 'value'], \Whilesmart\ModelConfiguration\Enums\ConfigValueType::Array);
+
+        $this->assertInstanceOf(\Workbench\App\Models\CustomConfiguration::class, $config);
+        $this->assertEquals('inherited_test', $config->key);
+        $this->assertEquals(['key' => 'value'], $config->value);
+        $this->assertTrue($config->is_custom);
+    }
+
     /**
      * Define database migrations.
      *
