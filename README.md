@@ -162,6 +162,45 @@ return [
 ];
 ```
 
+#### 2.8 Using Custom Configuration Models
+
+If you need to extend the Configuration model with additional functionality (e.g., soft deletes, auditing, or custom traits), you can use your own model class:
+
+**Step 1:** Create a custom model that extends the base Configuration model:
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Whilesmart\ModelConfiguration\Models\Configuration as BaseConfiguration;
+
+class Configuration extends BaseConfiguration
+{
+    use SoftDeletes;
+
+    protected $fillable = ['configurable_id', 'configurable_type', 'key', 'type', 'value', 'metadata'];
+}
+```
+
+**Step 2:** Configure the package to use your custom model:
+```php
+<?php
+
+return [
+    ...,
+    'model' => \App\Models\Configuration::class,
+];
+```
+
+**Step 3:** Use the package normally - no need to override traits or controllers!
+
+The package will automatically use your custom model for all configuration operations. This allows you to:
+- Add Laravel traits (SoftDeletes, Auditable, etc.)
+- Include additional attributes and relationships
+- Implement custom business logic at the model level
+- Receive automatic package updates without maintaining custom controllers
+
 ### 3. Model Relationships
 
 We have implemented a Trait `Configurable` that handles relationships. If your model has configuration, simply use the

@@ -6,4 +6,5 @@ return [
     'auth_middleware' => [],
     'allow_case_insensitive_keys' => false,
     'allowed_keys' => [],
+    'model' => \Whilesmart\ModelConfiguration\Models\Configuration::class,
 ];
