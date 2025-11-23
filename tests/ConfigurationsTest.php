@@ -82,7 +82,7 @@ class ConfigurationsTest extends TestCase
             'value' => ['email' => true, 'push' => false],
         ]);
 
-        config(['model-configuration.format_results_hook' => CustomFilterHook::class]);
+        config(['model-configuration.hooks' => [CustomFilterHook::class]]);
 
         // Make the request to get all configurations
         $response = $this->actingAs($user)->getJson('/api/configurations');
@@ -93,7 +93,8 @@ class ConfigurationsTest extends TestCase
                 'success',
                 'message',
                 'data' => [
-                    'results' => [
+                    'current_page',
+                    'data' => [
                         '*' => [
                             'id',
                             'configurable_type',

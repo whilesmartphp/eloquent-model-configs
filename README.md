@@ -201,25 +201,32 @@ The package will automatically use your custom model for all configuration opera
 - Implement custom business logic at the model level
 - Receive automatic package updates without maintaining custom controllers
 
-#### 2.9 Apply a Custom Hook On The Configurations Result
-The `GET /api/configurations` endpoints exposes a hook to allow for results customization. This hook can be set in the config file
+#### 2.9 Apply a Custom Hook To The Query And Results
+All endpoints expose hooks to allow for query and results customization. Hooks can be set in the config file
 ```php
 <?php
 
 return [
     ...,
-    'format_results_hook' => PaginateResultsHook::class,
+    'hooks' => [PaginateResultsHook::class],
 ];
 ```
 
-The hook must implement the `ResultsFilterHookInterface`.
+Each hook must implement the `ModelHookInterface`.
 ```php
-class PaginateResultsHook implements ResultsFilterHookInterface
+class PaginateResultsHook implements ModelHookInterface
 {
-    public function run(Relation $query, Request $request): mixed
+    public function beforeQuery(mixed $data, ConfigAction $action, Request $request): mixed
     {
-        $results = $query->paginate();
+        if ($action == ConfigAction::INDEX) {
+            return $data->paginate();
+        }
 
+        return $data;
+    }
+
+    public function afterQuery(mixed $results, ConfigAction $action, Request $request): mixed
+    {
         return $results;
     }
 }

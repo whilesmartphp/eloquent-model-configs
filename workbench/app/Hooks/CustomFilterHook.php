@@ -2,16 +2,23 @@
 
 namespace Workbench\App\Hooks;
 
-use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
-use Whilesmart\ModelConfiguration\Interfaces\ResultsFilterHookInterface;
+use Whilesmart\ModelConfiguration\Enums\ConfigAction;
+use Whilesmart\ModelConfiguration\Interfaces\ModelHookInterface;
 
-class CustomFilterHook implements ResultsFilterHookInterface
+class CustomFilterHook implements ModelHookInterface
 {
-    public function run(Relation $query, Request $request): mixed
+    public function beforeQuery(mixed $data, ConfigAction $action, Request $request): mixed
     {
-        $results = $query->get();
+        if ($action == ConfigAction::INDEX) {
+            return $data->paginate();
+        }
 
-        return ['results' => $results];
+        return $data;
+    }
+
+    public function afterQuery(mixed $results, ConfigAction $action, Request $request): mixed
+    {
+        return $results;
     }
 }

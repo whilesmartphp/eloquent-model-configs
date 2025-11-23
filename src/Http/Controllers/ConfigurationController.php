@@ -3,13 +3,15 @@
 namespace Whilesmart\ModelConfiguration\Http\Controllers;
 
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Validator;
 use Whilesmart\ModelConfiguration\Documentation\IConfigurationControllerInterface;
+use Whilesmart\ModelConfiguration\Enums\ConfigAction;
 use Whilesmart\ModelConfiguration\Enums\ConfigValueType;
-use Whilesmart\ModelConfiguration\Interfaces\ResultsFilterHookInterface;
+use Whilesmart\ModelConfiguration\Interfaces\ModelHookInterface;
 use Whilesmart\ModelConfiguration\Traits\ApiResponse;
 
 class ConfigurationController extends Controller implements IConfigurationControllerInterface
@@ -136,25 +138,46 @@ class ConfigurationController extends Controller implements IConfigurationContro
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
-        $configurations = $user->configurations();
-        $configurations = $this->formatResults($configurations, $request);
+        $query = $user->configurations();
+        $results = $this->runBeforeQueryHooks($query, ConfigAction::INDEX, $request);
+        $configurations = $this->runAfterQueryHooks($results, ConfigAction::INDEX, $request);
 
         return $this->success($configurations, 'Configurations retrieved successfully');
     }
 
-    private function formatResults(Relation $query, Request $request): mixed
+    private function runBeforeQueryHooks(mixed $data, ConfigAction $action, Request $request): mixed
     {
-        $hook = config('model-configuration.format_results_hook');
+        $hooks = config('model-configuration.hooks', []);
 
-        if ($hook && class_exists($hook)) {
-            $hook = app($hook);
-            if ($hook instanceof ResultsFilterHookInterface) {
-                $filteredQuery = $hook->run($query, $request);
-
-                return $filteredQuery;
+        foreach ($hooks as $hook) {
+            if ($hook && class_exists($hook)) {
+                $hook = app($hook);
+                if ($hook instanceof ModelHookInterface) {
+                    $data = $hook->beforeQuery($data, $action, $request);
+                }
             }
         }
 
-        return $query->get();
+        if ($data instanceof Relation || $data instanceof Builder) {
+            $data = $data->get();
+        }
+
+        return $data;
+    }
+
+    private function runAfterQueryHooks(mixed $results, ConfigAction $action, Request $request): mixed
+    {
+        $hooks = config('model-configuration.hooks', []);
+
+        foreach ($hooks as $hook) {
+            if ($hook && class_exists($hook)) {
+                $hook = app($hook);
+                if ($hook instanceof ModelHookInterface) {
+                    $results = $hook->afterQuery($results, $action, $request);
+                }
+            }
+        }
+
+        return $results;
     }
 }
