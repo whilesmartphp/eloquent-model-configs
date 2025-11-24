@@ -2,7 +2,7 @@
   "name": "whilesmart/eloquent-model-configuration",
   "description": "Laravel package for managing model-specific configurations with type safety and easy persistence",
   "license": "MIT",
-  "package-version": "1.0.6",
+  "package-version": "1.0.7",
   "authors": [
     {
       "name": "WhileSmart",
@@ -47,6 +47,7 @@
       "@clear",
       "@prepare"
     ],
+    "test": "vendor/bin/testbench package:test",
     "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
     "prepare": "@php vendor/bin/testbench package:discover --ansi",
     "build": "@php vendor/bin/testbench workbench:build --ansi",
