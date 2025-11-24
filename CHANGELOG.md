@@ -1,3 +1,6 @@
+## [1.0.7] - 2025-11-24
+- Add hooks to modify query and query results
+
 ## [1.0.6] - 2025-11-20
 - Add support for custom Configuration models via config option
 - Users can now extend Configuration model without publishing controllers
@@ -11,7 +14,7 @@
 - Add an option to allow case-insensitive config keys.
 
 ## [1.0.3] - 2025-10-06
-- Add ability to set custom api prefixes for the default model configuration endpoints.
+- Add the ability to set custom api prefixes for the default model configuration endpoints.
 
 ## [1.0.2] - 2025-10-06
 - Add command to export openapi documentation
