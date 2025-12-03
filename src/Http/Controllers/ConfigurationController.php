@@ -97,6 +97,7 @@ class ConfigurationController extends Controller implements IConfigurationContro
         $configuration_type = ConfigValueType::from($data['type']);
         $value = $configuration_type->getValue($data['value']);
         $config = $user->setConfigValue($formattedKey, $value, $configuration_type);
+        $config = $this->runAfterQueryHooks($config, ConfigAction::UPDATE, $request);
 
         return $this->success($config, 'Configuration updated successfully');
     }

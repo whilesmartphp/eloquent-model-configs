@@ -1,3 +1,6 @@
+## [1.0.8] - 2025-12-03
+- Add hooks to modify update query results
+
 ## [1.0.7] - 2025-11-24
 - Add hooks to modify query and query results
 
