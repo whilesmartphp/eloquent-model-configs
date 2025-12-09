@@ -1,3 +1,6 @@
+## [1.0.9] - 2025-12-09
+- Add after query hook to the store method
+
 ## [1.0.8] - 2025-12-03
 - Add hooks to modify update query results
 
