@@ -43,9 +43,10 @@ class ConfigurationController extends Controller implements IConfigurationContro
         $configuration_type = ConfigValueType::from($data['type']);
         $value = $configuration_type->getValue($data['value']);
 
-        $user->setConfigValue($formattedKey, $value, $configuration_type);
+        $config = $user->setConfigValue($formattedKey, $value, $configuration_type);
+        $config = $this->runAfterQueryHooks($config, ConfigAction::STORE, $request);
 
-        return $this->success(null, 'Configuration added successfully', 201);
+        return $this->success($config, 'Configuration added successfully', 201);
     }
 
     private function getAllowedConfigKeys(): array
@@ -62,6 +63,22 @@ class ConfigurationController extends Controller implements IConfigurationContro
         }
 
         return strtolower($sanitized_key);
+    }
+
+    private function runAfterQueryHooks(mixed $results, ConfigAction $action, Request $request): mixed
+    {
+        $hooks = config('model-configuration.hooks', []);
+
+        foreach ($hooks as $hook) {
+            if ($hook && class_exists($hook)) {
+                $hook = app($hook);
+                if ($hook instanceof ModelHookInterface) {
+                    $results = $hook->afterQuery($results, $action, $request);
+                }
+            }
+        }
+
+        return $results;
     }
 
     public function update(Request $request, $key): JsonResponse
@@ -164,21 +181,5 @@ class ConfigurationController extends Controller implements IConfigurationContro
         }
 
         return $data;
-    }
-
-    private function runAfterQueryHooks(mixed $results, ConfigAction $action, Request $request): mixed
-    {
-        $hooks = config('model-configuration.hooks', []);
-
-        foreach ($hooks as $hook) {
-            if ($hook && class_exists($hook)) {
-                $hook = app($hook);
-                if ($hook instanceof ModelHookInterface) {
-                    $results = $hook->afterQuery($results, $action, $request);
-                }
-            }
-        }
-
-        return $results;
     }
 }
