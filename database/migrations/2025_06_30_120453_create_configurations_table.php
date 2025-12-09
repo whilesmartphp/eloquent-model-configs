@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('key');
             $table->json('value');
             $table->string('configurable_type');
-            $table->unsignedBigInteger('configurable_id');
+            $table->string('configurable_id');
             $table->string('type')->default('string');
             $table->timestamps();
 
