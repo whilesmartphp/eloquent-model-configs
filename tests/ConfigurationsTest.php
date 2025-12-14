@@ -7,6 +7,7 @@ use Orchestra\Testbench\Attributes\WithMigration;
 use Orchestra\Testbench\TestCase;
 use Whilesmart\ModelConfiguration\Enums\ConfigValueType;
 use Workbench\App\Hooks\CustomFilterHook;
+use Workbench\App\Hooks\TestValueHook;
 use Workbench\App\Models\User;
 
 use function Orchestra\Testbench\workbench_path;
@@ -411,6 +412,84 @@ class ConfigurationsTest extends TestCase
         $this->assertEquals('inherited_test', $config->key);
         $this->assertEquals(['key' => 'value'], $config->value);
         $this->assertTrue($config->is_custom);
+    }
+
+    public function test_value_hook_is_called_when_config_is_created()
+    {
+        TestValueHook::reset();
+        config(['model-configuration.hooks' => [TestValueHook::class]]);
+
+        $user = $this->createUser();
+        $user->setConfigValue('test_key', 'test_value', ConfigValueType::String);
+
+        $this->assertCount(1, TestValueHook::$calls);
+        $this->assertEquals($user->id, TestValueHook::$calls[0]['model_id']);
+        $this->assertEquals('test_key', TestValueHook::$calls[0]['key']);
+        $this->assertEquals('test_value', TestValueHook::$calls[0]['value']);
+        $this->assertEquals(ConfigValueType::String, TestValueHook::$calls[0]['type']);
+        $this->assertTrue(TestValueHook::$calls[0]['was_created']);
+    }
+
+    public function test_value_hook_is_called_when_config_is_updated()
+    {
+        TestValueHook::reset();
+        config(['model-configuration.hooks' => [TestValueHook::class]]);
+
+        $user = $this->createUser();
+        $user->setConfigValue('test_key', 'initial_value', ConfigValueType::String);
+
+        TestValueHook::reset();
+
+        $user->setConfigValue('test_key', 'updated_value', ConfigValueType::String);
+
+        $this->assertCount(1, TestValueHook::$calls);
+        $this->assertEquals('test_key', TestValueHook::$calls[0]['key']);
+        $this->assertEquals('updated_value', TestValueHook::$calls[0]['value']);
+        $this->assertFalse(TestValueHook::$calls[0]['was_created']);
+    }
+
+    public function test_value_hook_receives_correct_model_class()
+    {
+        TestValueHook::reset();
+        config(['model-configuration.hooks' => [TestValueHook::class]]);
+
+        $user = $this->createUser();
+        $user->setConfigValue('test_key', 'test_value', ConfigValueType::String);
+
+        $this->assertEquals(User::class, TestValueHook::$calls[0]['model_class']);
+    }
+
+    public function test_multiple_value_hooks_are_called()
+    {
+        TestValueHook::reset();
+        config(['model-configuration.hooks' => [TestValueHook::class, TestValueHook::class]]);
+
+        $user = $this->createUser();
+        $user->setConfigValue('test_key', 'test_value', ConfigValueType::String);
+
+        $this->assertCount(2, TestValueHook::$calls);
+    }
+
+    public function test_value_hook_not_called_when_no_hooks_configured()
+    {
+        TestValueHook::reset();
+        config(['model-configuration.hooks' => []]);
+
+        $user = $this->createUser();
+        $user->setConfigValue('test_key', 'test_value', ConfigValueType::String);
+
+        $this->assertCount(0, TestValueHook::$calls);
+    }
+
+    public function test_value_hook_receives_configuration_id()
+    {
+        TestValueHook::reset();
+        config(['model-configuration.hooks' => [TestValueHook::class]]);
+
+        $user = $this->createUser();
+        $config = $user->setConfigValue('test_key', 'test_value', ConfigValueType::String);
+
+        $this->assertEquals($config->id, TestValueHook::$calls[0]['configuration_id']);
     }
 
     /**
