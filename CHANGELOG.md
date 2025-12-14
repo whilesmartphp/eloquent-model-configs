@@ -1,3 +1,7 @@
+## [1.0.10] - 2025-12-14
+- Add ConfigValueHookInterface for listening to config value changes
+- Unified hooks config: `hooks` array now accepts both ModelHookInterface and ConfigValueHookInterface
+
 ## [1.0.9] - 2025-12-09
 - Add after query hook to the store method
 
