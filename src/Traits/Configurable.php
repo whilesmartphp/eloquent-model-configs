@@ -5,6 +5,7 @@ namespace Whilesmart\ModelConfiguration\Traits;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Whilesmart\ModelConfiguration\Enums\ConfigValueType;
+use Whilesmart\ModelConfiguration\Interfaces\ConfigValueHookInterface;
 use Whilesmart\ModelConfiguration\Models\Configuration;
 
 trait Configurable
@@ -53,24 +54,36 @@ trait Configurable
     public function setConfigValue($key, $value, ConfigValueType $type): Configuration
     {
         if ($type === ConfigValueType::Date && $value instanceof Carbon) {
-            $value = $value->toDateTimeString(); // Or any other suitable string format
+            $value = $value->toDateTimeString();
         }
 
-        $configuration = $this->configurations()->where('key', $key)->first();
-        if ($configuration) {
-            $configuration->update([
-                'value' => $value,
-                'type' => $type->value,
-            ]);
-        } else {
-            $configuration = $this->configurations()->create([
-                'key' => $key,
-                'value' => $value,
-                'type' => $type->value,
-            ]);
-        }
+        $configuration = $this->configurations()->updateOrCreate(
+            ['key' => $key],
+            ['value' => $value, 'type' => $type->value]
+        );
+
+        $this->runConfigValueHooks($key, $value, $type, $configuration, $configuration->wasRecentlyCreated);
 
         return $configuration;
+    }
+
+    protected function runConfigValueHooks(
+        string $key,
+        mixed $value,
+        ConfigValueType $type,
+        Configuration $configuration,
+        bool $wasCreated
+    ): void {
+        $hooks = config('model-configuration.hooks', []);
+
+        foreach ($hooks as $hookClass) {
+            if ($hookClass && class_exists($hookClass)) {
+                $hook = app($hookClass);
+                if ($hook instanceof ConfigValueHookInterface) {
+                    $hook->onConfigValueSet($this, $key, $value, $type, $configuration, $wasCreated);
+                }
+            }
+        }
     }
 
     public function getConfigurationsAttribute()

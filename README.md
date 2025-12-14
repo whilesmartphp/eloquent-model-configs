@@ -201,18 +201,24 @@ The package will automatically use your custom model for all configuration opera
 - Implement custom business logic at the model level
 - Receive automatic package updates without maintaining custom controllers
 
-#### 2.9 Apply a Custom Hook To The Query And Results
-All endpoints expose hooks to allow for query and results customization. Hooks can be set in the config file
+#### 2.9 Hooks
+Register hooks to customize behavior. A single hook class can implement one or both interfaces:
+
 ```php
 <?php
 
 return [
     ...,
-    'hooks' => [PaginateResultsHook::class],
+    'hooks' => [
+        PaginateResultsHook::class,
+        OnboardingCompletedHook::class,
+    ],
 ];
 ```
 
-Each hook must implement the `ModelHookInterface`.
+##### ModelHookInterface (HTTP Request Hooks)
+Runs before/after HTTP requests to configuration endpoints.
+
 ```php
 class PaginateResultsHook implements ModelHookInterface
 {
@@ -231,6 +237,68 @@ class PaginateResultsHook implements ModelHookInterface
     }
 }
 ```
+
+##### ConfigValueHookInterface (Value Change Hooks)
+Runs when `setConfigValue()` is called, useful for triggering side effects.
+
+```php
+use Illuminate\Database\Eloquent\Model;
+use Whilesmart\ModelConfiguration\Enums\ConfigValueType;
+use Whilesmart\ModelConfiguration\Interfaces\ConfigValueHookInterface;
+use Whilesmart\ModelConfiguration\Models\Configuration;
+
+class OnboardingCompletedHook implements ConfigValueHookInterface
+{
+    public function onConfigValueSet(
+        Model $model,
+        string $key,
+        mixed $value,
+        ConfigValueType $type,
+        Configuration $configuration,
+        bool $wasCreated
+    ): void {
+        if ($key === 'onboarding_completed' && $value === 'true') {
+            app(OnboardingService::class)->complete($model);
+        }
+    }
+}
+```
+
+The hook receives:
+- `$model` - The model that owns the configuration (e.g., User)
+- `$key` - The configuration key that was set
+- `$value` - The new value
+- `$type` - The ConfigValueType enum
+- `$configuration` - The Configuration model instance
+- `$wasCreated` - `true` if this was a new configuration, `false` if updated
+
+##### Combined Hook
+A single class can implement both interfaces:
+
+```php
+class MyHook implements ModelHookInterface, ConfigValueHookInterface
+{
+    public function beforeQuery(mixed $data, ConfigAction $action, Request $request): mixed
+    {
+        return $data;
+    }
+
+    public function afterQuery(mixed $results, ConfigAction $action, Request $request): mixed
+    {
+        return $results;
+    }
+
+    public function onConfigValueSet(
+        Model $model,
+        string $key,
+        mixed $value,
+        ConfigValueType $type,
+        Configuration $configuration,
+        bool $wasCreated
+    ): void {
+        // Handle value changes
+    }
+}
 
 
 ### 3. Model Relationships
