@@ -1,3 +1,6 @@
+## [1.0.11] - 2026-01-11
+- Add value validation rules support for allowed keys
+
 ## [1.0.10] - 2025-12-14
 - Add ConfigValueHookInterface for listening to config value changes
 - Unified hooks config: `hooks` array now accepts both ModelHookInterface and ConfigValueHookInterface
