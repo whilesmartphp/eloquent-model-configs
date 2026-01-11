@@ -162,6 +162,20 @@ return [
 ];
 ```
 
+You can also define Laravel validation rules for each key's value:
+```php
+<?php
+
+return [
+    ...,
+    'allowed_keys' => [
+        'max_items' => 'integer|min:1|max:100',
+        'site_name' => 'string|max:50',
+        'simple_key', // No validation rules
+    ],
+];
+```
+
 #### 2.8 Using Custom Configuration Models
 
 If you need to extend the Configuration model with additional functionality (e.g., soft deletes, auditing, or custom traits), you can use your own model class:

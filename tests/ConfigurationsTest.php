@@ -492,6 +492,99 @@ class ConfigurationsTest extends TestCase
         $this->assertEquals($config->id, TestValueHook::$calls[0]['configuration_id']);
     }
 
+    public function test_api_user_cannot_add_configuration_with_invalid_value()
+    {
+        $user = $this->createUser();
+
+        config(['model-configuration.allowed_keys' => [
+            'max_items' => 'integer|min:1|max:100',
+        ]]);
+
+        $response = $this->actingAs($user)->postJson('/api/configurations', [
+            'key' => 'max_items',
+            'value' => 150,
+            'type' => 'int',
+        ]);
+
+        $response->assertStatus(422);
+    }
+
+    public function test_api_user_can_add_configuration_with_valid_value()
+    {
+        $user = $this->createUser();
+
+        config(['model-configuration.allowed_keys' => [
+            'max_items' => 'integer|min:1|max:100',
+        ]]);
+
+        $response = $this->actingAs($user)->postJson('/api/configurations', [
+            'key' => 'max_items',
+            'value' => 50,
+            'type' => 'int',
+        ]);
+
+        $response->assertStatus(201);
+    }
+
+    public function test_api_allowed_keys_backward_compatibility()
+    {
+        $user = $this->createUser();
+
+        config(['model-configuration.allowed_keys' => ['simple_key', 'another_key']]);
+
+        $response = $this->actingAs($user)->postJson('/api/configurations', [
+            'key' => 'simple_key',
+            'value' => 'any value',
+            'type' => 'string',
+        ]);
+
+        $response->assertStatus(201);
+    }
+
+    public function test_api_user_cannot_update_configuration_with_invalid_value()
+    {
+        $user = $this->createUser();
+
+        $user->configurations()->create([
+            'key' => 'max_items',
+            'value' => 50,
+            'type' => 'int',
+        ]);
+
+        config(['model-configuration.allowed_keys' => [
+            'max_items' => 'integer|min:1|max:100',
+        ]]);
+
+        $response = $this->actingAs($user)->putJson('/api/configurations/max_items', [
+            'value' => 150,
+            'type' => 'int',
+        ]);
+
+        $response->assertStatus(422);
+    }
+
+    public function test_api_user_can_update_configuration_with_valid_value()
+    {
+        $user = $this->createUser();
+
+        $user->configurations()->create([
+            'key' => 'max_items',
+            'value' => 50,
+            'type' => 'int',
+        ]);
+
+        config(['model-configuration.allowed_keys' => [
+            'max_items' => 'integer|min:1|max:100',
+        ]]);
+
+        $response = $this->actingAs($user)->putJson('/api/configurations/max_items', [
+            'value' => 75,
+            'type' => 'int',
+        ]);
+
+        $response->assertStatus(200);
+    }
+
     /**
      * Define database migrations.
      *

@@ -30,6 +30,9 @@ class ConfigurationController extends Controller implements IConfigurationContro
         if (! empty($allowedKeys)) {
             $rules['key'] = 'required|in:'.implode(',', $allowedKeys);
         }
+
+        $rules = $this->applyKeyValidationRules($request->input('key'), $rules);
+
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
@@ -51,8 +54,34 @@ class ConfigurationController extends Controller implements IConfigurationContro
 
     private function getAllowedConfigKeys(): array
     {
-        return config('model-configuration.allowed_keys', []);
+        $config = config('model-configuration.allowed_keys', []);
+        $keys = [];
+        foreach ($config as $key => $value) {
+            $keys[] = is_int($key) ? $value : $key;
+        }
 
+        return $keys;
+    }
+
+    private function getKeyValidationRules(string $key): ?string
+    {
+        $config = config('model-configuration.allowed_keys', []);
+
+        return $config[$key] ?? null;
+    }
+
+    private function applyKeyValidationRules(?string $key, array $rules): array
+    {
+        if ($key === null) {
+            return $rules;
+        }
+
+        $keyValidationRules = $this->getKeyValidationRules($key);
+        if ($keyValidationRules) {
+            $rules['value'] = 'required|'.$keyValidationRules;
+        }
+
+        return $rules;
     }
 
     protected function sanitizeKey($key): string
@@ -89,10 +118,14 @@ class ConfigurationController extends Controller implements IConfigurationContro
             return $this->failure('Invalid configuration key.', 422);
         }
 
-        $validator = Validator::make($request->all(), [
+        $rules = [
             'value' => 'required',
             'type' => 'required|in:string,int,float,bool,array,json,date',
-        ]);
+        ];
+
+        $rules = $this->applyKeyValidationRules($key, $rules);
+
+        $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return $this->failure('Validation failed.', 422, [$validator->errors()]);
@@ -100,7 +133,6 @@ class ConfigurationController extends Controller implements IConfigurationContro
 
         $data = $validator->validated();
         $user = $request->user();
-
         $formattedKey = $this->sanitizeKey($key);
 
         // Check if the configuration exists
