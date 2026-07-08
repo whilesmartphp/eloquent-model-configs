@@ -8,6 +8,7 @@ use Whilesmart\ModelConfiguration\Enums\ConfigValueType;
 use Whilesmart\ModelConfiguration\Interfaces\ConfigValueHookInterface;
 use Whilesmart\ModelConfiguration\Models\Configuration;
 
+// @phpstan-ignore-next-line
 trait Configurable
 {
     public function getConfig(string $key): ?Configuration

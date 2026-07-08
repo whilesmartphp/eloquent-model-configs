@@ -11,7 +11,9 @@ use Whilesmart\ModelConfiguration\Traits\Configurable;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Workbench\Database\Factories\UserFactory> */
-    use Configurable, HasFactory, Notifiable;
+    use Configurable;
+    use HasFactory;
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.

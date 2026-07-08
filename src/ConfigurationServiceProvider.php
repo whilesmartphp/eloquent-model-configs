@@ -25,10 +25,10 @@ class ConfigurationServiceProvider extends ServiceProvider
     public function boot()
     {
 
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
         $this->publishesMigrations([
-            __DIR__.'/../database/migrations' => database_path('migrations'),
+            __DIR__ . '/../database/migrations' => database_path('migrations'),
         ], ['model-configuration', 'model-configuration-migrations']);
 
         if (config('model-configuration.register_routes', true)) {
@@ -36,29 +36,29 @@ class ConfigurationServiceProvider extends ServiceProvider
                 $prefix = config('model-configuration.route_prefix', 'api');
                 if ($prefix) {
                     Route::prefix($prefix)->group(function () {
-                        $this->loadRoutesFrom(__DIR__.'/../routes/model-configuration.php');
+                        $this->loadRoutesFrom(__DIR__ . '/../routes/model-configuration.php');
                     });
                 } else {
-                    $this->loadRoutesFrom(__DIR__.'/../routes/model-configuration.php');
+                    $this->loadRoutesFrom(__DIR__ . '/../routes/model-configuration.php');
                 }
             });
         }
 
         $this->publishes([
-            __DIR__.'/../routes/model-configuration.php' => base_path('routes/model-configuration.php'),
+            __DIR__ . '/../routes/model-configuration.php' => base_path('routes/model-configuration.php'),
         ], ['model-configuration', 'model-configuration-routes']);
 
         $this->publishes([
-            __DIR__.'/Http/Controllers' => app_path('Http/Controllers'),
+            __DIR__ . '/Http/Controllers' => app_path('Http/Controllers'),
         ], ['model-configuration', 'model-configuration-controllers']);
 
         // Publish config
         $this->publishes([
-            __DIR__.'/../config/model-configuration.php' => config_path('model-configuration.php'),
+            __DIR__ . '/../config/model-configuration.php' => config_path('model-configuration.php'),
         ], ['model-configuration', 'model-configuration-config']);
 
         $this->publishes([
-            __DIR__.'/Documentation' => app_path('Http/Documentation'),
+            __DIR__ . '/Documentation' => app_path('Http/Documentation'),
         ], ['model-configuration', 'model-configuration-docs']);
     }
 }

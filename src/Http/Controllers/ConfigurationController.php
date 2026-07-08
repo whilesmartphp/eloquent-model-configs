@@ -28,7 +28,7 @@ class ConfigurationController extends Controller implements IConfigurationContro
 
         $allowedKeys = $this->getAllowedConfigKeys();
         if (! empty($allowedKeys)) {
-            $rules['key'] = 'required|in:'.implode(',', $allowedKeys);
+            $rules['key'] = 'required|in:' . implode(',', $allowedKeys);
         }
 
         $rules = $this->applyKeyValidationRules($request->input('key'), $rules);
@@ -78,7 +78,7 @@ class ConfigurationController extends Controller implements IConfigurationContro
 
         $keyValidationRules = $this->getKeyValidationRules($key);
         if ($keyValidationRules) {
-            $rules['value'] = 'required|'.$keyValidationRules;
+            $rules['value'] = 'required|' . $keyValidationRules;
         }
 
         return $rules;
