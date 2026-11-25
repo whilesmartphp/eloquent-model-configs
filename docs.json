@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/whilesmart/docs-kit/main/schema/docs.schema.json",
+  "name": "Eloquent Model Configuration",
+  "description": "Laravel package for managing model-specific configurations with type safety, polymorphic relationships, and ready-to-use API endpoints",
+  "icon": "database",
+  "category": {
+    "language": "php",
+    "framework": "laravel"
+  },
+  "sidebar": [
+    { "title": "Installation", "path": "docs/installation.md" },
+    { "title": "Quick Start", "path": "docs/quick-start.md" },
+    { "title": "Configuration", "path": "docs/configuration.md" },
+    { "title": "Configurable Trait", "path": "docs/configurable-trait.md" },
+    { "title": "Value Types", "path": "docs/value-types.md" },
+    { "title": "API Endpoints", "path": "docs/api-endpoints.md" },
+    { "title": "Hooks", "path": "docs/hooks.md" },
+    { "title": "Custom Models", "path": "docs/custom-models.md" }
+  ]
+}
