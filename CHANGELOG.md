@@ -1,3 +1,8 @@
+## [1.0.12] - 2026-11-26
+
+- Support integer, UUID and ULID configuration owners in shared storage.
+- Preserve existing numeric references during upgrades and string references on rollback.
+
 ## [1.0.11] - 2026-01-11
 - Add value validation rules support for allowed keys
 
