@@ -54,7 +54,7 @@ Schema::create('configurations', function (Blueprint $table) {
     $table->string('key');
     $table->json('value');
     $table->string('configurable_type');
-    $table->unsignedBigInteger('configurable_id');
+    $table->string('configurable_id', 64);
     $table->string('type')->default('string');
     $table->softDeletes(); // Add this line
     $table->timestamps();
