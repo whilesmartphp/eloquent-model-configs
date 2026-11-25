@@ -12,6 +12,16 @@ This Laravel package provides a complete configuration solution ready to be inte
 * **Configuration file:** Easily customize settings
 * **Laravel agnostic considerations:** designed with future framework agnosticism in mind
 
+## Model identifiers and upgrades
+
+Configuration owners can use integer, UUID or ULID primary keys in the same table. The `configurable_id` reference stores up to 64 characters; the owner's primary key is unchanged.
+
+Back up existing configuration data before upgrading, then run `php artisan migrate`. The upgrade widens existing numeric references to string storage without removing rows. Rolling back the upgrade keeps the wider column because narrowing it could destroy UUID or ULID references. Fresh installations use the wider column from the start.
+
+Applications that published the original configuration-table migration should update their published copy to use a 64-character string reference as well. Keep the upgrade migration available for existing databases.
+
+The mixed-identifier acceptance tests run on MySQL with a dedicated `eloquent_model_configs_test` database. Set the `DB_*` connection variables before running `vendor/bin/testbench package:test`; do not point these tests at an application database.
+
 ## Development
 
 This package includes a Docker development environment and Makefile for easy development.
