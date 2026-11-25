@@ -11,6 +11,7 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     env:
+      APP_ENV: testing
       DB_CONNECTION: mysql
       DB_HOST: 127.0.0.1
       DB_PORT: 33306
@@ -34,24 +35,19 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_mysql
+          tools: composer
       - name: Write ssh key to enable composer authentication for prive whilesmart packages
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.TEST_BACKEND_SSHKEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-      - name: Copy environment variables
-        run: php -r "file_exists('workbench/.env') || copy('workbench/.env.example', 'workbench/.env');"
-      - name: Update .env file
-        run: |
-          echo "DB_CONNECTION=mysql" >> workbench/.env
-          echo "DB_HOST=127.0.0.1" >> workbench/.env
-          echo "DB_PORT=33306" >> workbench/.env
-          echo "DB_DATABASE=eloquent_model_configs_test" >> workbench/.env
-          echo "DB_USERNAME=root" >> workbench/.env
-          echo "DB_PASSWORD=password" >> workbench/.env
-          echo "APP_ENV=testing" >> workbench/.env
       - name: Install dependencies
-        run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
+        run: composer install --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
       - name: Run migrations
         run: vendor/bin/testbench migrate
       - name: Run tests
